@@ -94,16 +94,16 @@ function StartScreen({ tweak, accent, sent, onStart, onReset }) {
         justifyContent: 'center', padding: `0 ${PAD}px`, textAlign: 'center' }}>
         <StarLogo height={240} float />
         <h1 style={{ color: C.white, fontWeight: 700, fontSize: 100, lineHeight: 1.0,
-          letterSpacing: '-.02em', marginTop: 46, textWrap: 'balance' }}>
+          letterSpacing: '-.02em', marginTop: 36, textWrap: 'balance' }}>
           {tweak.title}
         </h1>
         <p style={{ color: C.steel, fontWeight: 300, fontSize: 35, lineHeight: 1.5,
-          maxWidth: 780, marginTop: 34, textWrap: 'pretty' }}>
+          maxWidth: 780, marginTop: 22, textWrap: 'pretty' }}>
           {tweak.description}
         </p>
 
         {sent && (
-          <div style={{ marginTop: 40, display: 'inline-flex', alignItems: 'center', gap: 16,
+          <div style={{ marginTop: 52, display: 'inline-flex', alignItems: 'center', gap: 16,
             padding: '18px 34px', borderRadius: 999, background: `${accent}1f`,
             border: `1.5px solid ${accent}80`, color: C.white, fontSize: 30, fontWeight: 400 }}>
             <span style={{ fontSize: 30 }}>✦</span>
@@ -111,7 +111,7 @@ function StartScreen({ tweak, accent, sent, onStart, onReset }) {
           </div>
         )}
 
-        <div style={{ marginTop: 64, width: BTN_W }}>
+        <div style={{ marginTop: 52, width: BTN_W }}>
           {sent
             ? <Button accent={accent} big onClick={onReset}>Home</Button>
             : <Button accent={accent} big onClick={onStart}>Start</Button>}
@@ -171,20 +171,20 @@ function FormScreen({ accent, data, onChange, onContinue, onCancel }) {
   const valid = data.name.trim() && data.birth && data.base && data.memory.trim().length >= 3;
 
   return (
-    <Frame accent={accent} footer={false}>
+    <Frame accent={accent}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
         justifyContent: 'center', padding: `0 ${PAD}px` }}>
         <StarLogo height={108} />
         <h1 style={{ color: C.white, fontWeight: 700, fontSize: 60, lineHeight: 1.04,
-          letterSpacing: '-.02em', marginTop: 26, textAlign: 'center', textWrap: 'balance' }}>
+          letterSpacing: '-.02em', marginTop: 36, textAlign: 'center', textWrap: 'balance' }}>
           Add yourself to the map
         </h1>
-        <p style={{ color: C.steel, fontWeight: 300, fontSize: 30, marginTop: 14,
+        <p style={{ color: C.steel, fontWeight: 300, fontSize: 30, marginTop: 22,
           textAlign: 'center' }}>
           Tell us who you are — it takes a moment.
         </p>
 
-        <div style={{ width: 660, marginTop: 48, display: 'flex', flexDirection: 'column', gap: 30 }}>
+        <div style={{ width: 660, marginTop: 52, display: 'flex', flexDirection: 'column', gap: 30 }}>
           <FieldGroup label="Name">
             <TextField value={data.name} onChange={set('name')} accent={accent}
               placeholder="Your name" maxLength={40} />
@@ -209,7 +209,7 @@ function FormScreen({ accent, data, onChange, onContinue, onCancel }) {
           </FieldGroup>
         </div>
 
-        <div style={{ width: 660, marginTop: 48, display: 'flex', flexDirection: 'column',
+        <div style={{ width: 660, marginTop: 52, display: 'flex', flexDirection: 'column',
           alignItems: 'center', gap: 22 }}>
           <div style={{ width: BTN_W }}>
             <Button accent={accent} big onClick={onContinue} disabled={!valid}>
@@ -237,7 +237,7 @@ function ReviewScreen({ accent, data, sent, onSend, onRewrite }) {
   );
 
   return (
-    <Frame accent={accent} footer={false}>
+    <Frame accent={accent}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
         justifyContent: 'center', padding: `90px ${PAD}px 0` }}>
         <div style={{ color: C.steel, fontSize: 28, fontWeight: 300, letterSpacing: '.2em',
@@ -246,7 +246,7 @@ function ReviewScreen({ accent, data, sent, onSend, onRewrite }) {
         </div>
 
         {/* node card */}
-        <div style={{ width: 820, marginTop: 38, padding: '60px 60px 64px',
+        <div style={{ width: 820, marginTop: 52, padding: '60px 60px 64px',
           borderRadius: 44, position: 'relative',
           background: 'linear-gradient(160deg, rgba(0,52,120,.55), rgba(0,16,46,.72))',
           border: `2px solid ${accent}66`,
@@ -275,7 +275,7 @@ function ReviewScreen({ accent, data, sent, onSend, onRewrite }) {
             lineHeight: 1.42, marginTop: 14, textWrap: 'pretty' }}>“{data.memory}”</div>
         </div>
 
-        <div style={{ width: 820, marginTop: 48, display: 'flex', flexDirection: 'column',
+        <div style={{ width: 820, marginTop: 52, display: 'flex', flexDirection: 'column',
           alignItems: 'center', gap: 22 }}>
           <div style={{ width: BTN_W }}>
             <Button accent={accent} big onClick={onSend} disabled={sent}>
@@ -299,34 +299,46 @@ function ReviewScreen({ accent, data, sent, onSend, onRewrite }) {
 }
 
 /* -------------------------------------------------------- download screen */
-function DownloadScreen({ accent, downloadUrl, sent, onBack, onHome }) {
+function DownloadScreen({ accent, keepsake, name, onHome }) {
+  const handleDownload = useCallback(() => {
+    if (!keepsake) return;
+    const a = document.createElement('a');
+    a.href = keepsake;
+    const safe = (name || 'constellation').trim().replace(/\s+/g, '-').toLowerCase() || 'constellation';
+    a.download = `airbus-${safe}-constellation-card.jpg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }, [keepsake, name]);
+
   return (
     <Frame accent={accent}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
         justifyContent: 'center', padding: `0 ${PAD}px`, textAlign: 'center' }}>
-        <StarLogo height={120} />
-        <h2 style={{ color: C.white, fontWeight: 700, fontSize: 70, marginTop: 28,
+        <h2 style={{ color: C.white, fontWeight: 700, fontSize: 70, marginTop: 0,
           letterSpacing: '-.02em', textWrap: 'balance' }}>
           Take your keepsake
         </h2>
-        <p style={{ color: C.steel, fontSize: 33, fontWeight: 300, marginTop: 20, maxWidth: 700,
+        <p style={{ color: C.steel, fontSize: 33, fontWeight: 300, marginTop: 22, maxWidth: 720,
           lineHeight: 1.5 }}>
-          Scan the QR code with your phone's camera to save your constellation card.
+          Here's your constellation card — download it to keep it on your device.
         </p>
-        <div style={{ marginTop: 48, padding: 48, background: C.white, borderRadius: 48,
-          boxShadow: `0 30px 80px rgba(0,0,0,.45), 0 0 0 6px ${accent}33` }}>
-          <QRCode text={downloadUrl} size={620} />
-        </div>
-        <div style={{ marginTop: 56, display: 'flex', flexDirection: 'column',
+        {keepsake && (
+          <img src={keepsake} alt="Your constellation card"
+            style={{ width: 640, marginTop: 52, borderRadius: 28, display: 'block',
+              boxShadow: `0 30px 80px rgba(0,0,0,.5), 0 0 0 6px ${accent}33` }} />
+        )}
+        <div style={{ marginTop: 52, display: 'flex', flexDirection: 'column',
           alignItems: 'center', gap: 22 }}>
           <div style={{ width: BTN_W }}>
-            <Button accent={accent} big onClick={onHome}>Home</Button>
+            <Button accent={accent} big onClick={handleDownload}>
+              <span>Download</span>
+              <span style={{ fontSize: 30 }}>↓</span>
+            </Button>
           </div>
-          {!sent && (
-            <div style={{ width: BTN_W2 }}>
-              <Button variant="secondary" onClick={onBack}>Back</Button>
-            </div>
-          )}
+          <div style={{ width: BTN_W2 }}>
+            <Button variant="secondary" onClick={onHome}>Home</Button>
+          </div>
         </div>
       </div>
     </Frame>
@@ -347,7 +359,7 @@ function wrapText(ctx, text, maxWidth) {
   return lines;
 }
 
-function makeKeepsakeCard(data, accent, logo) {
+function makeKeepsakeCard(data, accent, logo, brand) {
   const W = 900, H = 1200;
   const cv = document.createElement('canvas');
   cv.width = W; cv.height = H;
@@ -371,43 +383,73 @@ function makeKeepsakeCard(data, accent, logo) {
 
   ctx.textAlign = 'center';
 
-  // logo
+  // --- fixed zones: star logo at top, Airbus wordmark at bottom ---
+  const logoTop = 120, logoH = 150;
   if (logo && logo.complete && logo.naturalWidth) {
-    const lh = 150, lw = logo.naturalWidth * (lh / logo.naturalHeight);
-    ctx.drawImage(logo, W / 2 - lw / 2, 110, lw, lh);
+    const lw = logo.naturalWidth * (logoH / logo.naturalHeight);
+    ctx.drawImage(logo, W / 2 - lw / 2, logoTop, lw, logoH);
   } else {
-    ctx.fillStyle = accent; ctx.beginPath(); ctx.arc(W / 2, 185, 60, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = accent; ctx.beginPath();
+    ctx.arc(W / 2, logoTop + logoH / 2, 60, 0, Math.PI * 2); ctx.fill();
   }
+  const logoBottom = logoTop + logoH;
+
+  // Airbus wordmark (real logo), centered above the bottom edge
+  const brandH = 40, brandRatio = 131.88 / 25.11;
+  const brandW = brandH * brandRatio;
+  const brandTop = H - 110;
+  if (brand && brand.complete) {
+    ctx.globalAlpha = 0.92;
+    ctx.drawImage(brand, W / 2 - brandW / 2, brandTop, brandW, brandH);
+    ctx.globalAlpha = 1;
+  } else {
+    ctx.fillStyle = 'rgba(183,201,211,.7)'; ctx.font = '400 28px "Inter Tight", sans-serif';
+    ctx.fillText('AIRBUS', W / 2, brandTop + brandH - 4);
+  }
+
+  // --- measure the text block so it can be centered between logo and wordmark ---
+  ctx.font = '700 76px "Inter Tight", sans-serif';
+  const nameLines = wrapText(ctx, data.name, W - 160).slice(0, 2);
+  ctx.font = 'italic 300 40px "Inter Tight", sans-serif';
+  const memLines = wrapText(ctx, `“${data.memory}”`, W - 200).slice(0, 6);
+
+  const LABEL_H = 30, GAP_LABEL = 50, NAME_LH = 86, GAP_NAME = 26,
+        LOC_H = 40, GAP_LOC = 42, DIV_H = 2, GAP_DIV = 44, MEM_LH = 56;
+  const blockH = LABEL_H + GAP_LABEL
+    + nameLines.length * NAME_LH + GAP_NAME
+    + LOC_H + GAP_LOC + DIV_H + GAP_DIV
+    + memLines.length * MEM_LH;
+
+  const regionTop = logoBottom + 30, regionBottom = brandTop - 30;
+  let y = (regionTop + regionBottom) / 2 - blockH / 2;
+  ctx.textBaseline = 'top';
 
   // label
   ctx.fillStyle = accent; ctx.font = '500 26px "Inter Tight", sans-serif';
-  ctx.fillText('S K Y   N E T W O R K   C O N S T E L L A T I O N', W / 2, 330);
+  ctx.fillText('S K Y   N E T W O R K   C O N S T E L L A T I O N', W / 2, y);
+  y += LABEL_H + GAP_LABEL;
 
   // name
   ctx.fillStyle = '#ffffff'; ctx.font = '700 76px "Inter Tight", sans-serif';
-  const nameLines = wrapText(ctx, data.name, W - 160);
-  let y = 430;
-  nameLines.slice(0, 2).forEach((l) => { ctx.fillText(l, W / 2, y); y += 84; });
+  nameLines.forEach((l) => { ctx.fillText(l, W / 2, y); y += NAME_LH; });
+  y += GAP_NAME;
 
   // location
   ctx.fillStyle = '#B7C9D3'; ctx.font = '300 34px "Inter Tight", sans-serif';
-  ctx.fillText(`Born in ${data.birth}  ·  Based in ${data.base}`, W / 2, y + 16);
+  ctx.fillText(`Born in ${data.birth}  ·  Based in ${data.base}`, W / 2, y);
+  y += LOC_H + GAP_LOC;
 
   // divider
   ctx.strokeStyle = accent; ctx.globalAlpha = 0.45; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(W / 2 - 150, y + 70); ctx.lineTo(W / 2 + 150, y + 70); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W / 2 - 150, y); ctx.lineTo(W / 2 + 150, y); ctx.stroke();
   ctx.globalAlpha = 1;
+  y += DIV_H + GAP_DIV;
 
   // memory
   ctx.fillStyle = '#ffffff'; ctx.font = 'italic 300 40px "Inter Tight", sans-serif';
-  const memLines = wrapText(ctx, `“${data.memory}”`, W - 200);
-  let my = y + 150;
-  memLines.slice(0, 6).forEach((l) => { ctx.fillText(l, W / 2, my); my += 56; });
+  memLines.forEach((l) => { ctx.fillText(l, W / 2, y); y += MEM_LH; });
 
-  // footer
-  ctx.fillStyle = 'rgba(183,201,211,.7)'; ctx.font = '400 28px "Inter Tight", sans-serif';
-  ctx.fillText('AIRBUS', W / 2, H - 80);
-
+  ctx.textBaseline = 'alphabetic';
   return cv.toDataURL('image/jpeg', 0.92);
 }
 
@@ -445,12 +487,16 @@ function App() {
   const [sending, setSending] = useState(false);
   const [token] = useState(makeToken);
   const logoRef = useRef(null);
+  const brandRef = useRef(null);
 
-  // preload the star logo so keepsake generation stays synchronous
+  // preload the logos so keepsake generation stays synchronous
   useEffect(() => {
     const img = new Image();
     img.src = 'assets/star-logo.png';
     logoRef.current = img;
+    const brand = new Image();
+    brand.src = 'assets/airbus-wordmark.svg';
+    brandRef.current = brand;
   }, []);
 
   const accent = t.accent;
@@ -463,7 +509,7 @@ function App() {
 
   const handleSend = useCallback(() => {
     if (sent) return;
-    setKeepsake(makeKeepsakeCard(form, accent, logoRef.current));
+    setKeepsake(makeKeepsakeCard(form, accent, logoRef.current, brandRef.current));
     setSending(true);
   }, [sent, form, accent]);
 
@@ -480,8 +526,12 @@ function App() {
     setForm((f) => (f.name && f.birth && f.base && f.memory ? f : SAMPLE_FORM));
     if (step === 'send') {
       const f = (form.name && form.birth && form.base && form.memory) ? form : SAMPLE_FORM;
-      setKeepsake(makeKeepsakeCard(f, accent, logoRef.current));
+      setKeepsake(makeKeepsakeCard(f, accent, logoRef.current, brandRef.current));
       go('review'); setSending(true); return;
+    }
+    if (step === 'download') {
+      const f = (form.name && form.birth && form.base && form.memory) ? form : SAMPLE_FORM;
+      setKeepsake((k) => k || makeKeepsakeCard(f, accent, logoRef.current, brandRef.current));
     }
     go(step); // 'review' | 'download'
   }, [goHome, go, form, accent]);
@@ -497,8 +547,8 @@ function App() {
         return <ReviewScreen accent={accent} data={form} sent={sent}
           onSend={handleSend} onRewrite={() => go('form')} />;
       case 'download':
-        return <DownloadScreen accent={accent} downloadUrl={downloadUrl} sent={sent}
-          onBack={() => go('review')} onHome={goHome} />;
+        return <DownloadScreen accent={accent} keepsake={keepsake} name={form.name}
+          onHome={goHome} />;
       default:
         return null;
     }
