@@ -168,7 +168,7 @@ const MEMORY_MAX = 200;
 function FormScreen({ accent, data, onChange, onContinue, onCancel }) {
   const set = (k) => (v) => onChange({ ...data, [k]: v });
   const memLeft = MEMORY_MAX - data.memory.length;
-  const valid = data.name.trim() && data.birth && data.base && data.memory.trim().length >= 3;
+  const valid = data.name.trim() && data.birth && data.base && data.serving && data.memory.trim().length >= 3;
 
   return (
     <Frame accent={accent}>
@@ -190,13 +190,18 @@ function FormScreen({ accent, data, onChange, onContinue, onCancel }) {
               placeholder="Your name" maxLength={40} />
           </FieldGroup>
 
-          <FieldGroup label="Country of birth">
+          <FieldGroup label="Born in">
             <CountrySelect value={data.birth} onChange={set('birth')} accent={accent}
               placeholder="Select a country" />
           </FieldGroup>
 
-          <FieldGroup label="Work base">
+          <FieldGroup label="Working in">
             <CountrySelect value={data.base} onChange={set('base')} accent={accent}
+              placeholder="Select a country" />
+          </FieldGroup>
+
+          <FieldGroup label="Delivering services to">
+            <CountrySelect value={data.serving} onChange={set('serving')} accent={accent}
               placeholder="Select a country" />
           </FieldGroup>
 
@@ -261,9 +266,10 @@ function ReviewScreen({ accent, data, sent, onSend, onRewrite }) {
           <div style={{ color: C.white, fontSize: 70, fontWeight: 700, lineHeight: 1.05,
             letterSpacing: '-.02em', marginTop: 8, textWrap: 'balance' }}>{data.name}</div>
 
-          <div style={{ display: 'flex', gap: 64, marginTop: 40 }}>
+          <div style={{ display: 'flex', gap: 56, marginTop: 40, flexWrap: 'wrap' }}>
             <Row label="Born in" value={data.birth} />
-            <Row label="Based in" value={data.base} />
+            <Row label="Working in" value={data.base} />
+            <Row label="Delivering to" value={data.serving} />
           </div>
 
           <div style={{ height: 2, background: `linear-gradient(to right, ${accent}66, transparent)`,
@@ -414,10 +420,10 @@ function makeKeepsakeCard(data, accent, logo, brand) {
   const memLines = wrapText(ctx, `“${data.memory}”`, W - 200).slice(0, 6);
 
   const LABEL_H = 30, GAP_LABEL = 50, NAME_LH = 86, GAP_NAME = 26,
-        LOC_H = 40, GAP_LOC = 42, DIV_H = 2, GAP_DIV = 44, MEM_LH = 56;
+        LOC_H = 48, GAP_LOC = 42, DIV_H = 2, GAP_DIV = 44, MEM_LH = 56;
   const blockH = LABEL_H + GAP_LABEL
     + nameLines.length * NAME_LH + GAP_NAME
-    + LOC_H + GAP_LOC + DIV_H + GAP_DIV
+    + LOC_H * 2 + GAP_LOC + DIV_H + GAP_DIV
     + memLines.length * MEM_LH;
 
   const regionTop = logoBottom + 30, regionBottom = brandTop - 30;
@@ -436,7 +442,9 @@ function makeKeepsakeCard(data, accent, logo, brand) {
 
   // location
   ctx.fillStyle = '#B7C9D3'; ctx.font = '300 34px "Inter Tight", sans-serif';
-  ctx.fillText(`Born in ${data.birth}  ·  Based in ${data.base}`, W / 2, y);
+  ctx.fillText(`Born in ${data.birth}  ·  Working in ${data.base}`, W / 2, y);
+  y += LOC_H;
+  ctx.fillText(`Delivering services to ${data.serving}`, W / 2, y);
   y += LOC_H + GAP_LOC;
 
   // divider
@@ -458,9 +466,9 @@ function makeToken() {
   return Math.random().toString(36).slice(2, 6) + Math.random().toString(36).slice(2, 6);
 }
 
-const EMPTY_FORM = { name: '', birth: '', base: '', memory: '' };
+const EMPTY_FORM = { name: '', birth: '', base: '', serving: '', memory: '' };
 const SAMPLE_FORM = {
-  name: 'Alex Rivera', birth: 'Spain', base: 'Germany',
+  name: 'Alex Rivera', birth: 'Spain', base: 'Germany', serving: 'France',
   memory: 'The night the whole cohort stayed late to finish the prototype — and it actually flew.',
 };
 
@@ -523,14 +531,14 @@ function App() {
     if (step === 'start') { goHome(); return; }
     if (step === 'form') { setSent(false); setForm(EMPTY_FORM); go('form'); return; }
     // downstream steps need data — fill with a sample if the form is empty
-    setForm((f) => (f.name && f.birth && f.base && f.memory ? f : SAMPLE_FORM));
+    setForm((f) => (f.name && f.birth && f.base && f.serving && f.memory ? f : SAMPLE_FORM));
     if (step === 'send') {
-      const f = (form.name && form.birth && form.base && form.memory) ? form : SAMPLE_FORM;
+      const f = (form.name && form.birth && form.base && form.serving && form.memory) ? form : SAMPLE_FORM;
       setKeepsake(makeKeepsakeCard(f, accent, logoRef.current, brandRef.current));
       go('review'); setSending(true); return;
     }
     if (step === 'download') {
-      const f = (form.name && form.birth && form.base && form.memory) ? form : SAMPLE_FORM;
+      const f = (form.name && form.birth && form.base && form.serving && form.memory) ? form : SAMPLE_FORM;
       setKeepsake((k) => k || makeKeepsakeCard(f, accent, logoRef.current, brandRef.current));
     }
     go(step); // 'review' | 'download'
